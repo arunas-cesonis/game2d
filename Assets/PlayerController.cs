@@ -33,19 +33,13 @@ public class PlayerController : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         Bounds bounds = boxCollider.bounds;
 
-        if (!grounded)
+        velocity = velocity + gravity * dt;
+
+        if (jump)
         {
-            velocity = velocity + gravity * dt;
-        }
-        else
-        {
-            if (jump)
-            {
-                jump = false;
-                grounded = false;
-                velocity = velocity + Vector2.up * 10.0f;
-            }
-    
+            jump = false;
+            grounded = false;
+            velocity = velocity + Vector2.up * 10.0f;
         }
 
         Vector2 d = velocity * dt;
@@ -58,53 +52,36 @@ public class PlayerController : MonoBehaviour
             d = d + 4.0f * Vector2.right * dt;
         }
 
-        bool collided = false;
-        if (d.y < 0.0f || grounded)
+        if (Mathf.Abs(d.y) > 0.0f)
         {
-            Vector2 start = new Vector2(bounds.min.x + margin, bounds.min.y);
-            Vector2 end = new Vector2(bounds.max.x - margin, bounds.min.y);
+            bool movingDown = d.y < 0.0f;
+            Vector2 start = new Vector2(bounds.min.x + margin, movingDown ? bounds.min.y : bounds.max.y);
+            Vector2 end = new Vector2(bounds.max.x - margin, movingDown ? bounds.min.y : bounds.max.y);
+            Vector2 direction = movingDown ? Vector2.down : Vector2.up;
             float distance = Mathf.Abs(d.y);
+            bool gotGrounded = false;
 
             for (int i = 0; i < vrays; i++)
             {
                 float amount = (float)i / (float)(vrays - 1);
                 Vector2 origin = Vector2.Lerp(start, end, amount);
-                RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, distance, groundMask);
-                Debug.DrawRay(origin, Vector2.down, Color.red);
+                RaycastHit2D hit = Physics2D.Raycast(origin, direction, distance, groundMask);
+                Debug.DrawRay(origin, direction, Color.red);
                 if (hit.collider)
                 {
-                    d = new Vector2(d.x, -hit.distance);
+                    d = new Vector2(d.x, movingDown ? -hit.distance : hit.distance);
                     velocity = new Vector2(velocity.x, 0.0f);
-                    grounded = true;
-                    collided = true;
+                    if (movingDown)
+                    {
+                        grounded = true;
+                        gotGrounded = true;
+                    }
                     break;
                 }
             }
-        }
-        if (!collided)
-        {
-            grounded = false;
-        }
-
-        if (d.y > 0.0f)
-        {
-            Vector2 start = new Vector2(bounds.min.x + margin, bounds.max.y);
-            Vector2 end = new Vector2(bounds.max.x - margin, bounds.max.y);
-            float distance = Mathf.Abs(d.y);
-
-            for (int i = 0; i < vrays; i++)
+            if (!gotGrounded && movingDown)
             {
-                float amount = (float)i / (float)(vrays - 1);
-                Vector2 origin = Vector2.Lerp(start, end, amount);
-                RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.up, distance, groundMask);
-                Debug.DrawRay(origin, Vector2.up, Color.red);
-                if (hit.collider)
-                {
-                    d = new Vector2(d.x, hit.distance);
-                    velocity = new Vector2(velocity.x, 0.0f);
-                    grounded = true;
-                    break;
-                }
+                grounded = false;
             }
         }
 
