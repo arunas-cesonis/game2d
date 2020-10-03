@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     private bool grounded = false;
     private Vector2 velocity = Vector2.zero;
     private Vector2 gravity = new Vector3(0.0f, -30.0f);
-    private float margin = 0.01f;
+    private float margin = 0.1f;
     private int vrays = 4;
     private int hrays = 4;
     private bool jump = false;
@@ -45,11 +45,13 @@ public class PlayerController : MonoBehaviour
         Vector2 d = velocity * dt;
         if (Input.GetKey(KeyCode.A))
         {
-            d = d + 4.0f * Vector2.left * dt;
+            float amount = Input.GetKey(KeyCode.LeftShift) ? 1.0f : 4.0f;
+            d = d + amount * Vector2.left * dt;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            d = d + 4.0f * Vector2.right * dt;
+            float amount = Input.GetKey(KeyCode.LeftShift) ? 1.0f : 4.0f;
+            d = d + amount * Vector2.right * dt;
         }
 
         if (Mathf.Abs(d.y) > 0.0f)
@@ -58,13 +60,14 @@ public class PlayerController : MonoBehaviour
             Vector2 start = new Vector2(bounds.min.x + margin, movingDown ? bounds.min.y : bounds.max.y);
             Vector2 end = new Vector2(bounds.max.x - margin, movingDown ? bounds.min.y : bounds.max.y);
             Vector2 direction = movingDown ? Vector2.down : Vector2.up;
-            float distance = Mathf.Abs(d.y);
-            bool gotGrounded = false;
+
+            bool touchingGround = false;
 
             for (int i = 0; i < vrays; i++)
             {
                 float amount = (float)i / (float)(vrays - 1);
                 Vector2 origin = Vector2.Lerp(start, end, amount);
+                float distance = Mathf.Abs(d.y);
                 RaycastHit2D hit = Physics2D.Raycast(origin, direction, distance, groundMask);
                 Debug.DrawRay(origin, direction, Color.red);
                 if (hit.collider)
@@ -74,12 +77,12 @@ public class PlayerController : MonoBehaviour
                     if (movingDown)
                     {
                         grounded = true;
-                        gotGrounded = true;
+                        touchingGround = true;
                     }
                     break;
                 }
             }
-            if (!gotGrounded && movingDown)
+            if (!touchingGround && movingDown)
             {
                 grounded = false;
             }
