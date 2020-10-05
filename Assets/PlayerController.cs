@@ -7,14 +7,19 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public LayerMask groundMask;
+    public GameObject weapon;
     private BoxCollider2D boxCollider;
     private bool grounded = false;
     private Vector2 velocity = Vector2.zero;
-    private Vector2 gravity = new Vector3(0.0f, -30.0f);
-    private float margin = 0.1f;
+    public Vector2 gravity = new Vector3(0.0f, -30.0f);
+    public float jumpForce = 12.0f;
+    public float walkForce = 4.0f;
+    private float margin = 0.01f;
     private int vrays = 4;
     private int hrays = 4;
     private bool jump = false;
+    private bool facingRight = true;
+    private bool attack = false;
     void Awake()
     {
         boxCollider = GetComponent<BoxCollider2D>();
@@ -26,6 +31,14 @@ public class PlayerController : MonoBehaviour
         {
             jump = true;
         }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            attack = true;
+        }
+        weapon.SetActive(Input.GetKey(KeyCode.J));
+        Vector3 ls = this.transform.localScale;
+        ls.x = facingRight ? 1 : -1;
+        this.transform.localScale = ls;
     }
 
     void FixedUpdate()
@@ -33,24 +46,33 @@ public class PlayerController : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         Bounds bounds = boxCollider.bounds;
 
+        // Camera follow
+        // Priesai vaiksto pirmyn atgal
+        // Kai priesa prilieti atsoki atgal
+        // Kai trenki priesui jisai atsoka truputi
+        // Trys gyvybes playeriui
+        // Vienas hitas priesui
+        // Dashas
+        // Prabegti leveli greitai, duoda taskus kiek greitai padarei
+
         velocity = velocity + gravity * dt;
 
         if (jump)
         {
             jump = false;
             grounded = false;
-            velocity = velocity + Vector2.up * 10.0f;
+            velocity = velocity + Vector2.up * jumpForce;
         }
 
         Vector2 d = velocity * dt;
         if (Input.GetKey(KeyCode.A))
         {
-            float amount = Input.GetKey(KeyCode.LeftShift) ? 1.0f : 4.0f;
+            float amount = Input.GetKey(KeyCode.LeftShift) ? 1.0f : walkForce;
             d = d + amount * Vector2.left * dt;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            float amount = Input.GetKey(KeyCode.LeftShift) ? 1.0f : 4.0f;
+            float amount = Input.GetKey(KeyCode.LeftShift) ? 1.0f : walkForce;
             d = d + amount * Vector2.right * dt;
         }
 
@@ -88,10 +110,10 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-
         if (Mathf.Abs(d.x) > 0.0f)
         {
             bool movingRight = d.x > 0.0f;
+            facingRight = movingRight;
           
             Vector2 start = new Vector2(movingRight ? bounds.max.x : bounds.min.x, bounds.min.y + margin);
             Vector2 end = new Vector2(movingRight ? bounds.max.x : bounds.min.x, bounds.max.y - margin);
@@ -113,13 +135,18 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (attack)
+        {
+            RaycastHit2D hit = Physics2D.CircleCast(transform.position, 0.5f, facingRight ? Vector2.right : Vector2.left, 1, groundMask);
+            if (hit && hit.collider.gameObject.CompareTag("Enemy"))
+            {
+                Destroy(hit.collider.gameObject);
+            }
+            attack = false;
+        }
+
 
         transform.Translate(d);
-
     }
-    private void LateUpdate()
-    {
-    
 
-    }
 }
