@@ -34,21 +34,20 @@ public class GameManager : MonoBehaviour
         cameraFollow.Update(0.0f);
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        FixedUpdateEnemies();
+        UpdateEnemies();
     }
 
-    private void FixedUpdateEnemies()
+    private void UpdateEnemies()
     {
         foreach (Enemy enemy in enemies)
         {
             Vector3 d = enemy.target - enemy.transform.position;
-            float distance = d.magnitude;
-            if (distance > 0.1f)
+            float distance = d.x;
+            if (Mathf.Abs(distance) > 0.2f)
             {
-                d.Normalize();
-                enemy.transform.position = enemy.transform.position + d * Time.fixedDeltaTime;
+                enemy.characterController.Move(distance);
             }
             else
             {

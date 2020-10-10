@@ -6,15 +6,19 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public Vector3 target;
-    public Vector3 initialPosition;
+    private Vector3 initialPosition;
+    public CharacterController characterController;
     public void Awake()
     {
+        characterController = GetComponent<CharacterController>();
         initialPosition = transform.position;
         NextTarget();
     }
     public void NextTarget()
     {
-        target = initialPosition + Vector3.right * Random.Range(-1.0f, 1.0f) * 5.0f;
+        float range = Random.Range(-1.0f, 1.0f) * 5.0f;
+        target =
+            new Vector3(initialPosition.x + range, transform.position.y, transform.position.z);
     }
     private void Update()
     {

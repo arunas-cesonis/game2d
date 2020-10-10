@@ -4,9 +4,9 @@ using UnityEngine.Tilemaps;
 
 public class CameraFollow
 {
-    public GameObject gameObject;
-    public Camera camera;
-    public TilemapCollider2D tilemapCollider2D;
+    private GameObject gameObject;
+    private Camera camera;
+    private TilemapCollider2D tilemapCollider2D;
     private Vector3 velocity = Vector3.zero;
     public CameraFollow(GameObject gameObject, Camera camera, TilemapCollider2D tilemapCollider2D)
     {
@@ -17,7 +17,7 @@ public class CameraFollow
     public void Update(float dt)
     {
         camera.transform.position =
-            Vector3.SmoothDamp(Camera.main.transform.position, GetTarget(), ref velocity, Time.deltaTime);
+            Vector3.SmoothDamp(Camera.main.transform.position, GetTarget(), ref velocity, dt);
     }
     private Vector3 GetTarget()
     {
