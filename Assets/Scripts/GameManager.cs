@@ -5,11 +5,30 @@ using UnityEngine.Tilemaps;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject player;
-    public TilemapCollider2D tilemapCollider2D;
+    private Player player;
+    private TilemapCollider2D tilemapCollider2D;
     private Vector3 cameraVelocity = Vector3.zero;
 
-    void LateUpdate()
+    private void Awake()
+    {
+        player = FindObjectOfType<Player>();
+        Debug.Assert(player != null, "Player not found");
+        tilemapCollider2D = FindObjectOfType<TilemapCollider2D>();
+        Debug.Assert(tilemapCollider2D != null, "TilemapCollider2D not found");
+    }
+
+    private void Start()
+    {
+        Camera.main.transform.position = GetCameraTarget();
+    }
+
+    private void LateUpdate()
+    {
+        Camera.main.transform.position =
+            Vector3.SmoothDamp(Camera.main.transform.position, GetCameraTarget(), ref cameraVelocity, 0.1f);
+    }
+
+    private Vector3 GetCameraTarget()
     {
         Camera camera = Camera.main;
         Vector3 follow = player.transform.position;
@@ -26,8 +45,6 @@ public class GameManager : MonoBehaviour
         float y = Mathf.Max(minBottom, follow.y);
 
         Vector3 target = new Vector3(x, y, camera.transform.position.z);
-
-        camera.transform.position =
-            Vector3.SmoothDamp(camera.transform.position, target, ref cameraVelocity, 0.1f);
+        return target;
     }
 }

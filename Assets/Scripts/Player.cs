@@ -4,7 +4,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public LayerMask groundMask;
     private BoxCollider2D boxCollider;
@@ -44,7 +44,6 @@ public class PlayerController : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         Bounds bounds = boxCollider.bounds;
 
-        // Camera follow
         // Priesai vaiksto pirmyn atgal
         // Kai priesa prilieti atsoki atgal
         // Kai trenki priesui jisai atsoka truputi
