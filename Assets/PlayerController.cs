@@ -7,13 +7,12 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public LayerMask groundMask;
-    public GameObject weapon;
     private BoxCollider2D boxCollider;
     private bool grounded = false;
     private Vector2 velocity = Vector2.zero;
-    public Vector2 gravity = new Vector3(0.0f, -30.0f);
-    public float jumpForce = 12.0f;
-    public float walkForce = 4.0f;
+    public Vector2 gravity = new Vector3(0.0f, -80.0f);
+    public float jumpForce = 26.0f;
+    public float walkForce = 6.0f;
     private float margin = 0.01f;
     private int vrays = 4;
     private int hrays = 4;
@@ -35,7 +34,6 @@ public class PlayerController : MonoBehaviour
         {
             attack = true;
         }
-        weapon.SetActive(Input.GetKey(KeyCode.J));
         Vector3 ls = this.transform.localScale;
         ls.x = facingRight ? 1 : -1;
         this.transform.localScale = ls;
@@ -145,8 +143,8 @@ public class PlayerController : MonoBehaviour
             attack = false;
         }
 
-
         transform.Translate(d);
     }
+
 
 }
