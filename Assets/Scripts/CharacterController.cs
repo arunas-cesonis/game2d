@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class CharacterController: MonoBehaviour
 {
     private LayerMask layerMask;
+    public LayerMask mask;
     private BoxCollider2D boxCollider;
     private bool grounded = false;
     private Vector2 velocity = Vector2.zero;
@@ -31,6 +33,11 @@ public class CharacterController: MonoBehaviour
     public void Move(float move)
     {
         this.move = Mathf.Clamp(move, -1.0f, 1.0f);
+    }
+    private RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance)
+    {
+        Debug.DrawRay(origin, direction);
+        return Physics2D.Raycast(origin, direction, distance, layerMask);
     }
     private void FixedUpdate()
     {
@@ -72,9 +79,8 @@ public class CharacterController: MonoBehaviour
                 float amount = (float)i / (float)(vrays - 1);
                 Vector2 origin = Vector2.Lerp(start, end, amount);
                 float distance = Mathf.Abs(d.y);
-                RaycastHit2D hit = Physics2D.Raycast(origin, direction, distance, layerMask);
-                Debug.DrawRay(origin, direction, Color.red);
-                if (hit.collider)
+                RaycastHit2D hit = Raycast(origin, direction, distance);
+                if (hit && hit.collider)
                 {
                     d = new Vector2(d.x, movingDown ? -hit.distance : hit.distance);
                     velocity = new Vector2(velocity.x, 0.0f);
@@ -106,9 +112,8 @@ public class CharacterController: MonoBehaviour
             {
                 float amount = (float)i / (float)(hrays - 1);
                 Vector2 origin = Vector2.Lerp(start, end, amount);
-                RaycastHit2D hit = Physics2D.Raycast(origin, direction, distance, layerMask);
-                Debug.DrawRay(origin, direction, Color.red);
-                if (hit.collider)
+                RaycastHit2D hit = Raycast(origin, direction, distance);
+                if (hit && hit.collider)
                 {
                     d = new Vector2(movingRight ? hit.distance : -hit.distance, d.y);
                     velocity = new Vector2(0.0f, velocity.y);

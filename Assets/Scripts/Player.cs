@@ -7,13 +7,19 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private CharacterController characterController;
+    private Animator animator;
     void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            animator.Play("SwordHit 1");
+        }
         if (Input.GetKeyDown(KeyCode.W))
         {
             characterController.Jump();

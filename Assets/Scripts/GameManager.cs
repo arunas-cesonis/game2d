@@ -1,9 +1,8 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-
-
 
 public class GameManager : MonoBehaviour
 {
@@ -12,6 +11,7 @@ public class GameManager : MonoBehaviour
     private List<Enemy> enemies;
     private Vector3 cameraVelocity = Vector3.zero;
     private CameraFollow cameraFollow;
+    public GameObject enemyPrefab;
 
     private void Awake()
     {
@@ -39,10 +39,24 @@ public class GameManager : MonoBehaviour
         UpdateEnemies();
     }
 
+    private void SpawnEnemy()
+    {
+        GameObject o = Instantiate(enemyPrefab, new Vector3(UnityEngine.Random.Range(-5.0f, 5.0f), 3.0f, 0.0f), Quaternion.identity);
+        Enemy e = o.GetComponent<Enemy>();
+        enemies.Add(e);
+    }
+
     private void UpdateEnemies()
     {
-        foreach (Enemy enemy in enemies)
+        List<Enemy> newEnemies = new List<Enemy>();
+        foreach(Enemy enemy in enemies)
         {
+            if (enemy.touchingBlade)
+            {
+                Destroy(enemy.gameObject);
+                continue;
+            }
+
             Vector3 d = enemy.target - enemy.transform.position;
             float distance = d.x;
             if (Mathf.Abs(distance) > 0.2f)
@@ -53,6 +67,13 @@ public class GameManager : MonoBehaviour
             {
                 enemy.NextTarget();
             }
+
+            newEnemies.Add(enemy);
+        }
+        enemies = newEnemies;
+        if(Input.GetKeyDown(KeyCode.F))
+        {
+            SpawnEnemy();
         }
     }
 
