@@ -4,7 +4,6 @@ using UnityEngine;
 public class CharacterController: MonoBehaviour
 {
     private LayerMask layerMask;
-    public LayerMask mask;
     private BoxCollider2D boxCollider;
     private bool grounded = false;
     private Vector2 velocity = Vector2.zero;

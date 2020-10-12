@@ -87,9 +87,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e08830af5bb3e4f7185c8ab5eeed3237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mask:
-    serializedVersion: 2
-    m_Bits: 0
   gravity: {x: 0, y: -80}
   jumpForce: 26
   walkForce: 6
