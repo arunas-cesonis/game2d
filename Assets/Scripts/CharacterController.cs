@@ -35,21 +35,13 @@ public class CharacterController: MonoBehaviour
     }
     private RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance)
     {
-        Debug.DrawRay(origin, direction);
+        Debug.DrawRay(origin, direction * distance, Color.red);
         return Physics2D.Raycast(origin, direction, distance, layerMask);
     }
     private void FixedUpdate()
     {
         float dt = Time.fixedDeltaTime;
         Bounds bounds = boxCollider.bounds;
-
-        // Priesai vaiksto pirmyn atgal
-        // Kai priesa prilieti atsoki atgal
-        // Kai trenki priesui jisai atsoka truputi
-        // Trys gyvybes playeriui
-        // Vienas hitas priesui
-        // Dashas
-        // Prabegti leveli greitai, duoda taskus kiek greitai padarei
 
         velocity = velocity + gravity * dt;
 
@@ -63,6 +55,8 @@ public class CharacterController: MonoBehaviour
         Vector2 d = velocity * dt;
 
         d = d + walkForce * move * Vector2.right * dt;
+
+        boxCollider.enabled = false;
 
         if (Mathf.Abs(d.y) > 0.0f)
         {
@@ -79,7 +73,7 @@ public class CharacterController: MonoBehaviour
                 Vector2 origin = Vector2.Lerp(start, end, amount);
                 float distance = Mathf.Abs(d.y);
                 RaycastHit2D hit = Raycast(origin, direction, distance);
-                if (hit && hit.collider)
+                if (hit.collider)
                 {
                     d = new Vector2(d.x, movingDown ? -hit.distance : hit.distance);
                     velocity = new Vector2(velocity.x, 0.0f);
@@ -112,7 +106,7 @@ public class CharacterController: MonoBehaviour
                 float amount = (float)i / (float)(hrays - 1);
                 Vector2 origin = Vector2.Lerp(start, end, amount);
                 RaycastHit2D hit = Raycast(origin, direction, distance);
-                if (hit && hit.collider)
+                if (hit.collider)
                 {
                     d = new Vector2(movingRight ? hit.distance : -hit.distance, d.y);
                     velocity = new Vector2(0.0f, velocity.y);
@@ -120,6 +114,8 @@ public class CharacterController: MonoBehaviour
                 }
             }
         }
+
+        boxCollider.enabled = true;
 
         transform.Translate(d);
         Vector3 ls = transform.localScale;
