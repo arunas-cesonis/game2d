@@ -7,18 +7,18 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private CharacterController characterController;
-    private Animator animator;
+    private Sword sword;
     void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        animator = GetComponent<Animator>();
+        sword = GetComponentInChildren<Sword>();
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.J))
         {
-            animator.Play("SwordHit 1");
+            sword.Hit();
         }
         if (Input.GetKeyDown(KeyCode.W))
         {

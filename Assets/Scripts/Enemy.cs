@@ -5,44 +5,102 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public Vector3 target;
-    private Vector3 initialPosition;
     public CharacterController characterController;
-    public bool touchingBlade = false;
+    private BoxCollider2D boxCollider;
+    public GameObject body;
+    public GameObject eye;
+    private GameObject target;
+    private bool touchingBlade = false;
     private SpriteRenderer spriteRenderer;
+    private Sword sword;
     public void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        initialPosition = transform.position;
-        NextTarget();
+        spriteRenderer = body.GetComponent<SpriteRenderer>();
+        sword = GetComponentInChildren<Sword>();
+        boxCollider = gameObject.GetComponent<BoxCollider2D>();
     }
-    public void NextTarget()
+
+    private Vector2 GetDirectionToTarget()
     {
-        float range = Random.Range(-1.0f, 1.0f) * 5.0f;
-        target =
-            new Vector3(initialPosition.x + range, transform.position.y, transform.position.z);
+        return (target.transform.position - eye.transform.position);
     }
-    private void Update()
+
+    private Vector2 GetRaycastDirection()
     {
-        Debug.DrawLine(transform.position, target);
-        if (touchingBlade)
+        if (target)
         {
-            spriteRenderer.color = Color.red;
+            return GetDirectionToTarget().normalized;
         }
         else
         {
-            spriteRenderer.color = new Color(0x5F / 255.0f, 0x5E / 255.0f, 0xC5 / 255.0f);
+            return characterController.IsFacingRight() ? Vector2.right : Vector2.left;
         }
     }
+
+    private float GetRaycastDistance()
+    {
+        if (target)
+        {
+            return 4.0f;
+        }
+        else
+        {
+            return 2.0f;
+        }
+    }
+
+    private void Update()
+    {
+
+        boxCollider.enabled = false;
+
+
+        Bounds bounds = boxCollider.bounds;
+        Vector2 origin = eye.transform.position;
+        RaycastHit2D hit = Util.Raycast(origin, GetRaycastDirection(), GetRaycastDistance());
+
+        target = null;
+        if (hit.collider)
+        {
+            if (hit.collider.gameObject.name == "Player")
+            {
+                target = hit.collider.gameObject;
+            }
+        }
+
+        boxCollider.enabled = true;
+
+        if (target)
+        {
+            float move = Mathf.Sign(target.transform.position.x - transform.position.x);
+            characterController.Move(move);
+            if (GetDirectionToTarget().magnitude < 1.0f)
+            {
+                sword.Hit();
+            }
+        }
+        else
+        {
+            characterController.Move(0.0f);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
+        print("Collisiong enter " + collider.gameObject.name);
         if (collider.gameObject.name == "Blade")
+        {
             touchingBlade = true;
+        }
     }
+
     private void OnTriggerExit2D(Collider2D collider)
     {
+        print("Collisiong exit " + collider.gameObject.name);
         if (collider.gameObject.name == "Blade")
+        {
             touchingBlade = false;
+        }
     }
 }

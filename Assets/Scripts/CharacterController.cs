@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
+[RequireComponent(typeof(BoxCollider2D))]
 public class CharacterController: MonoBehaviour
 {
     private LayerMask layerMask;
@@ -17,6 +18,11 @@ public class CharacterController: MonoBehaviour
     private float move = 0.0f;
     private bool facingRight = true;
 
+    public bool IsFacingRight()
+    {
+        return facingRight;
+    }
+
     private void Awake()
     {
         boxCollider = gameObject.GetComponent<BoxCollider2D>();
@@ -32,11 +38,6 @@ public class CharacterController: MonoBehaviour
     public void Move(float move)
     {
         this.move = Mathf.Clamp(move, -1.0f, 1.0f);
-    }
-    private RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance)
-    {
-        Debug.DrawRay(origin, direction * distance, Color.red);
-        return Physics2D.Raycast(origin, direction, distance, layerMask);
     }
     private void FixedUpdate()
     {
@@ -72,7 +73,7 @@ public class CharacterController: MonoBehaviour
                 float amount = (float)i / (float)(vrays - 1);
                 Vector2 origin = Vector2.Lerp(start, end, amount);
                 float distance = Mathf.Abs(d.y);
-                RaycastHit2D hit = Raycast(origin, direction, distance);
+                RaycastHit2D hit = Util.Raycast(origin, direction, distance, layerMask);
                 if (hit.collider)
                 {
                     d = new Vector2(d.x, movingDown ? -hit.distance : hit.distance);
@@ -105,7 +106,7 @@ public class CharacterController: MonoBehaviour
             {
                 float amount = (float)i / (float)(hrays - 1);
                 Vector2 origin = Vector2.Lerp(start, end, amount);
-                RaycastHit2D hit = Raycast(origin, direction, distance);
+                RaycastHit2D hit = Util.Raycast(origin, direction, distance, layerMask);
                 if (hit.collider)
                 {
                     d = new Vector2(movingRight ? hit.distance : -hit.distance, d.y);
