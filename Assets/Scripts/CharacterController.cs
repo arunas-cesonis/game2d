@@ -26,7 +26,8 @@ public class CharacterController: MonoBehaviour
     private void Awake()
     {
         boxCollider = gameObject.GetComponent<BoxCollider2D>();
-        layerMask = 1 << LayerMask.NameToLayer("Ground");
+        layerMask = (1 << LayerMask.NameToLayer("Ground"))
+            | (1 << LayerMask.NameToLayer("Characters"));
     }
     public void Jump()
     {

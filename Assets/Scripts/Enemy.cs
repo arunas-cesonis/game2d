@@ -42,11 +42,11 @@ public class Enemy : MonoBehaviour
     {
         if (target)
         {
-            return 4.0f;
+            return 8.0f;
         }
         else
         {
-            return 2.0f;
+            return 4.0f;
         }
     }
 
@@ -55,17 +55,17 @@ public class Enemy : MonoBehaviour
 
         boxCollider.enabled = false;
 
-
-        Bounds bounds = boxCollider.bounds;
         Vector2 origin = eye.transform.position;
-        RaycastHit2D hit = Util.Raycast(origin, GetRaycastDirection(), GetRaycastDistance());
+        LayerMask layerMask = 1 << LayerMask.NameToLayer("Characters");
+        RaycastHit2D[] hits = Util.RaycastAll(origin, GetRaycastDirection(), GetRaycastDistance(), layerMask);
 
         target = null;
-        if (hit.collider)
+        foreach (RaycastHit2D hit in hits)
         {
             if (hit.collider.gameObject.name == "Player")
             {
                 target = hit.collider.gameObject;
+                break;
             }
         }
 
@@ -73,7 +73,8 @@ public class Enemy : MonoBehaviour
 
         if (target)
         {
-            float move = Mathf.Sign(target.transform.position.x - transform.position.x);
+            float horizontalDistance = target.transform.position.x - transform.position.x;
+            float move = Mathf.Sign(horizontalDistance);
             characterController.Move(move);
             if (GetDirectionToTarget().magnitude < 1.0f)
             {
