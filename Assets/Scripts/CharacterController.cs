@@ -26,8 +26,7 @@ public class CharacterController: MonoBehaviour
     private void Awake()
     {
         boxCollider = gameObject.GetComponent<BoxCollider2D>();
-        layerMask = (1 << LayerMask.NameToLayer("Ground"))
-            | (1 << LayerMask.NameToLayer("Characters"));
+        layerMask = (1 << LayerMask.NameToLayer("Ground"));
     }
     public void Jump()
     {
@@ -57,8 +56,6 @@ public class CharacterController: MonoBehaviour
         Vector2 d = velocity * dt;
 
         d = d + walkForce * move * Vector2.right * dt;
-
-        boxCollider.enabled = false;
 
         if (Mathf.Abs(d.y) > 0.0f)
         {
@@ -117,11 +114,20 @@ public class CharacterController: MonoBehaviour
             }
         }
 
-        boxCollider.enabled = true;
-
         transform.Translate(d);
         Vector3 ls = transform.localScale;
         ls.x = facingRight ? 1 : -1;
         transform.localScale = ls;
+    }
+    private void OnTriggerStay2D(Collider2D collider)
+    {
+        if (collider.gameObject.GetComponent<CharacterController>())
+        {
+            GameObject player = collider.gameObject;
+            float horizontalDistance = player.transform.position.x - transform.position.x;
+            float overlap = 1.0f - Mathf.Abs(horizontalDistance);
+            transform.Translate(-overlap * Mathf.Sign(horizontalDistance) * 0.5f, 0.0f, 0.0f);
+            player.transform.Translate(overlap * Mathf.Sign(horizontalDistance) * 0.5f, 0.0f, 0.0f);
+        }
     }
 }

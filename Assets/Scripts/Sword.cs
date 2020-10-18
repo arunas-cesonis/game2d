@@ -15,4 +15,5 @@ public class Sword : MonoBehaviour
         animator.Play("SwordHit");
     }
 
+
 }

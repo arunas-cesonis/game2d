@@ -52,9 +52,6 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-
-        boxCollider.enabled = false;
-
         Vector2 origin = eye.transform.position;
         LayerMask layerMask = 1 << LayerMask.NameToLayer("Characters");
         RaycastHit2D[] hits = Util.RaycastAll(origin, GetRaycastDirection(), GetRaycastDistance(), layerMask);
@@ -68,8 +65,6 @@ public class Enemy : MonoBehaviour
                 break;
             }
         }
-
-        boxCollider.enabled = true;
 
         if (target)
         {
@@ -87,21 +82,15 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerStay2D(Collider2D collider)
     {
-        print("Collisiong enter " + collider.gameObject.name);
-        if (collider.gameObject.name == "Blade")
+        if (collider.gameObject.GetComponent<CharacterController>())
         {
-            touchingBlade = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collider)
-    {
-        print("Collisiong exit " + collider.gameObject.name);
-        if (collider.gameObject.name == "Blade")
-        {
-            touchingBlade = false;
+            GameObject player = collider.gameObject;
+            float horizontalDistance = player.transform.position.x - transform.position.x;
+            float overlap = 1.0f - Mathf.Abs(horizontalDistance);
+            transform.Translate(-overlap * Mathf.Sign(horizontalDistance) * 0.5f, 0.0f, 0.0f);
+            player.transform.Translate(overlap * Mathf.Sign(horizontalDistance) * 0.5f, 0.0f, 0.0f);
         }
     }
 }

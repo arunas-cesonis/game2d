@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 9197162510845434602}
   - component: {fileID: 7258765112271267933}
   - component: {fileID: 5429454969732183749}
-  - component: {fileID: 2994085059723081250}
+  - component: {fileID: 5276880581804717011}
   m_Layer: 0
   m_Name: Blade
   m_TagString: Untagged
@@ -141,7 +141,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!50 &2994085059723081250
+--- !u!50 &5276880581804717011
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
